@@ -1,0 +1,20 @@
+{
+    "name": "babeuloula/inspiring-kaamelott",
+    "description": "Get an inspiring quote from Kaamelott",
+    "type": "library",
+    "require": {
+        "php": "^8.0"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "BaBeuloula\\InspiringKaamelott\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "BaBeuloula",
+            "email": "info@babeuloula.fr"
+        }
+    ]
+}
