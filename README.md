@@ -4,6 +4,8 @@ Get an inspiring quote from Kaamelott.
 
 ## How to use
 
+`composer require babeuloula/inspiring-kaamelott`
+
 ### Laravel
 
 Update your `routes/console.php` Laravel file
