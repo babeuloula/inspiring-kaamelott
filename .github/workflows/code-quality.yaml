@@ -1,0 +1,133 @@
+name: Code quality
+
+on:
+    push:
+        branches:
+            - '**'
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    composer:
+        runs-on: ubuntu-latest
+
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v3
+
+            -   name: Cache composer dependencies
+                uses: actions/cache@v3
+                with:
+                    key: composer-${{ hashFiles('composer.json') }}-${{ hashFiles('composer.lock') }}
+                    restore-keys: composer-
+                    path: vendor
+
+            -   name: Install composer dependencies
+                uses: php-actions/composer@v6
+                with:
+                    interaction: no
+                    dev: yes
+                    php_version: "8.1"
+                    version: 2
+                    args: --optimize-autoloader --no-scripts --ignore-platform-reqs
+
+    lint:
+        runs-on: ubuntu-latest
+
+        needs: composer
+
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v3
+
+            -   name: Cache composer dependencies
+                uses: actions/cache@v3
+                with:
+                    key: composer-${{ hashFiles('composer.json') }}-${{ hashFiles('composer.lock') }}
+                    restore-keys: composer-
+                    path: vendor
+
+            -   name: Install PHP with extension
+                uses: shivammathur/setup-php@v2
+
+            -   name: PHP Code Sniffer
+                run: |
+                    mkdir -p ./.cache
+                    vendor/bin/phpcs -p
+
+    analyse:
+        runs-on: ubuntu-latest
+
+        needs: composer
+
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v3
+
+            -   name: Cache composer dependencies
+                uses: actions/cache@v3
+                with:
+                    key: composer-${{ hashFiles('composer.json') }}-${{ hashFiles('composer.lock') }}
+                    restore-keys: composer-
+                    path: vendor
+
+            -   name: Install PHP with extension
+                uses: shivammathur/setup-php@v2
+                with:
+                    php-version: '8.1'
+
+            -   name: PHPStan
+                run: |
+                    mkdir -p ./.cache/phpstan
+                    vendor/bin/phpstan analyse --memory-limit=4G
+
+    phpunit:
+        runs-on: ubuntu-latest
+
+        needs: composer
+
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v3
+
+            -   name: Cache composer dependencies
+                uses: actions/cache@v3
+                with:
+                    key: composer-${{ hashFiles('composer.json') }}-${{ hashFiles('composer.lock') }}
+                    restore-keys: composer-
+                    path: vendor
+
+            -   name: Install PHP with extension
+                uses: shivammathur/setup-php@v2
+                with:
+                    php-version: '8.1'
+
+            -   name: PHPunit
+                run: vendor/bin/phpunit
+
+    security:
+        runs-on: ubuntu-latest
+
+        needs: composer
+
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v3
+
+            -   name: Cache composer dependencies
+                uses: actions/cache@v3
+                with:
+                    key: composer-${{ hashFiles('composer.json') }}-${{ hashFiles('composer.lock') }}
+                    restore-keys: composer-
+                    path: vendor
+
+            -   name: Audit composer dependencies
+                uses: php-actions/composer@v6
+                with:
+                    interaction: no
+                    dev: yes
+                    php_version: "8.1"
+                    version: 2
+                    command: audit

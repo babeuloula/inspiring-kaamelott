@@ -1,0 +1,11 @@
+includes:
+    - vendor/phpstan/phpstan-strict-rules/rules.neon
+
+parameters:
+    tmpDir: ./.cache/phpstan
+    level: 8
+    paths:
+        - src
+        - tests
+    checkGenericClassInNonGenericObjectType: false
+    treatPhpDocTypesAsCertain: false

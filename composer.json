@@ -1,9 +1,10 @@
 {
     "name": "babeuloula/inspiring-kaamelott",
     "description": "Get an inspiring quote from Kaamelott",
+    "keywords": ["Kaamelott", "Laravel", "console", "inspiring", "inspire", "quote", "BaBeuloula"],
     "type": "library",
     "require": {
-        "php": "^8.0"
+        "php": ">=8.1"
     },
     "license": "MIT",
     "autoload": {
@@ -11,10 +12,26 @@
             "BaBeuloula\\InspiringKaamelott\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "BaBeuloula\\InspiringKaamelott\\Tests\\": "tests/"
+        }
+    },
     "authors": [
         {
             "name": "BaBeuloula",
             "email": "info@babeuloula.fr"
         }
-    ]
+    ],
+    "require-dev": {
+        "babeuloula/phpcs": "^1.5",
+        "phpstan/phpstan": "^1.10",
+        "phpstan/phpstan-strict-rules": "^1.5",
+        "phpunit/phpunit": "^10.5"
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
+    }
 }

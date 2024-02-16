@@ -1,0 +1,32 @@
+#!/usr/bin/env sh
+
+# This script allows you to run any command into the fpm container with your current user
+
+BASEDIR="$( cd "$( dirname "$0" )" && pwd )"
+DISABLE_TTY=${DISABLE_TTY:-0} # When running a php command inside a docker container with tty, the exit code will always be 129. Use DISABLE_TTY=1 .
+DOCKER_HOST=${DOCKER_HOST:-/var/run/docker.sock}
+DOCKER_COMPOSE=${DOCKER_COMPOSE:-docker compose}
+
+cd $(dirname ${BASEDIR})
+
+if [ $# -eq 0 ]; then
+    set -- "sh"
+fi
+
+EXEC_OR_RUN="run --rm --no-deps"
+if [ -n "$(docker-compose ps -q --status running fpm 2> /dev/null)" ]; then
+  EXEC_OR_RUN="exec"
+fi
+
+if echo ${DOCKER_HOST} | grep unix:///run/user/ > /dev/null 2>&1; then
+    # Docker rootless
+    ${DOCKER_COMPOSE} $EXEC_OR_RUN php "$@"
+elif [ -t 1 -a 1 -ne "${DISABLE_TTY}" ]; then
+    if [ "$( uname )" = "Darwin" ]; then
+      # Mac OSX: osxfx automatically set perms to the current user
+      ${DOCKER_COMPOSE} $EXEC_OR_RUN php "$@"
+    else
+      # Default local env
+      ${DOCKER_COMPOSE} $EXEC_OR_RUN -u "$(id -u):$(id -g)" php "$@"
+    fi
+fi
